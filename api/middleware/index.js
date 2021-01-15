@@ -1,4 +1,5 @@
 const Projects = require('../projects/projects-model')
+const Actions=require('../actions/actions-model')
 
 async function projectId(req, res,next){
     try{const project = await Projects.get(req.params.id)
@@ -29,7 +30,7 @@ function validateProjectBody(req,res,next){
 
 async function validateActionId(req,res,next){
     try{
-        const action = await action.get(req.params.id)
+        const action = await Actions.get(req.params.id)
         if(action){
             req.action=action
             next()
@@ -57,7 +58,7 @@ async function validateActionBody(req,res,next){
         res.status(400).json({message: 'Missing action notes'})
     }
     else{
-        try{ const project = await Project.get(req.body.project_id)
+        try{ const project = await Projects.get(req.body.project_id)
         if (project){
             next()
         }

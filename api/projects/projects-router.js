@@ -1,57 +1,103 @@
-// Write your "projects" router here!
 const express = require('express')
 const router = express.Router()
 const Project = require('./projects-model')
-const {projectId, validateProjectBody} = require('../middleware/index')
 
-router.get('/', ((req, res, next)=>{
+
+router.get('/', (req, res) => {
     Project.get()
-    .then(data =>{
-        res.status(200).json(data)
-    })
-    .catch(next)
-}))
-
-router.get('/:id', projectId, (req, res, next) =>{
-    res.status(200).json(req.project)
-})   
-
-router.post('/', validateProjectBody, (req,res,next)=>{
-    Project.insert(req.body)
-    .then(project =>{
-        res.status(200).json(project)
-    })
-    .catch(next)
-})
-router.put('/:id',projectId, validateProjectBody, (req,res,next)=>{
-    Project.update(req.params.id,req.body)
-        .then(project=>{
+        .then(project => {
             res.status(200).json(project)
         })
-        .catch(next)
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ error: err.message })
+        })
 })
-router.delete('/:id',projectId, (req,res,next)=>{
-    Project.remove(req.params.id)
-        .then(deleted=>{
-            if (deleted===1){
-                res.status(200).json({message:`The project ${req.params.id} was deleted`})
+
+router.get('/:id', (req, res) => {
+    const { id } = req.params
+
+    Project.get(id)
+        .then(project => {
+            if(project){
+                res.status(200).json(project)
             }
-            else{res.status(500).json({message:'error deleting the project'})}
+            else{
+                res.status(404).json({ error: err.message })
+            }
         })
-        .catch(next)
+        .catch(err => {
+            console.log(err)
+            res.status(404).json({ error: err.message })
+        })
 })
 
-router.get('/:id/actions',projectId,(req,res,next)=>{
-    Project.getProjectActions(req.params.id)
-        .then(actionsArray=>{
-            res.status(200).json(actionsArray)
-        })
-        .catch(next)
-})
-router.use((error, req, res, next)=>{
-    res.status(500).json({ info: 'There was an error in the router',
-  message: error.message,
-  stack: error.stack})
-  })
 
-module.exports=router
+router.post('/', (req, res) => {
+    if(!req.body.name || !req.body.description){
+        res.status(400).json({ errorMessage: 'missing required field'})
+    }
+    Project.insert(req.body)
+        .then(project => {
+            res.status(201).json(project)
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ error: err.message })
+        })
+})
+
+router.put('/:id', (req, res) => {
+    const { id } = req.params
+    const changes = req.body
+
+    Project.update(id, changes)
+        .then(project => {
+            if(req.body.name && req.body.description && req.body.completed){
+                res.status(200).json(project)
+            }
+            else{
+                res.status(400).json({ errorMessage: 'missing required field'})
+            }
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(400).json({ error: err.message })
+        })
+})
+
+router.delete('/:id', (req, res) => {
+    const { id } = req.params
+    Project.remove(id)
+    .then(project => {
+        if(project){
+            res.status(200).json({ message: "project deleted"})
+        }
+        else{
+            res.status(404).json({ message: 'No id is found'})
+        }
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json({ message: 'project could not be deleted'})
+    })
+})
+
+router.get('/:id/actions', (req, res) => {
+    const { id } = req.params
+    Project.getProjectActions(id)
+        .then(projectId => {
+            if(projectId){
+                res.status(200).json(projectId)
+            }
+            else{
+                res.status(404).json({ errorMessage: 'could not find the action' })
+            }
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ message: err.message })
+        })
+})
+
+module.exports = router 
