@@ -1,12 +1,12 @@
 const express = require('express');
+const projectsRouter= require('./projects/projects-router')
+
 const server = express();
 server.use(express.json())
 
-server.get("/", (req, res) =>{
-    res.staatus(200).json({
-        api: "down"
-    })
-})
+
+server.use('api/projects',projectsRouter)
+
 
 // Complete your server here!
 // Do NOT `server.listen()` inside this file!
