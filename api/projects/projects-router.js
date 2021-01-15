@@ -21,8 +21,7 @@ router.get('/:id', (req, res) => {
         .then(project => {
             if(project){
                 res.status(200).json(project)
-            }
-            else{
+            }else{
                 res.status(404).json({ error: err.message })
             }
         })
@@ -55,8 +54,7 @@ router.put('/:id', (req, res) => {
         .then(project => {
             if(req.body.name && req.body.description && req.body.completed){
                 res.status(200).json(project)
-            }
-            else{
+            }else{
                 res.status(400).json({ errorMessage: 'requires name, description,AND completed'})
             }
         })
@@ -72,8 +70,7 @@ router.delete('/:id', (req, res) => {
     .then(project => {
         if(project){
             res.status(200).json({ message: "project lost to the void"})
-        }
-        else{
+        }else{
             res.status(404).json({ message: 'im gonna need to see some id'})
         }
     })
@@ -89,8 +86,7 @@ router.get('/:id/actions', (req, res) => {
         .then(projectId => {
             if(projectId){
                 res.status(200).json(projectId)
-            }
-            else{
+            }else{
                 res.status(404).json({ errorMessage: 'action AWOL' })
             }
         })

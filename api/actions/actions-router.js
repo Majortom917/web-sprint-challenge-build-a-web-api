@@ -53,8 +53,7 @@ router.put('/:id', (req, res) => {
         .then(action => {
             if(req.body.project_id && req.body.description && req.body.notes && req.body.completed){
                 res.status(200).json(action)
-            }
-            else{
+            }else{
                 res.status(400).json({ errorMessage: 'requires project_id, description, completion, AND notes'} )
             }
         })
@@ -70,8 +69,7 @@ router.delete('/:id', (req, res) => {
         .then(action => {
             if(action){
                 res.status(200).json({ message: "action consigned to the void"})
-            }
-            else{
+            }else{
                 res.status(404).json({ errorMessage: 'no action with that Id'})
             }
         })
